@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { add } from "../../services/products";
+import { add } from "../../services/patient";
 
 export default async (request: Request, response: Response) => {
   const { name, price, description } = request.body;

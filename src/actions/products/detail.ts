@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { detail } from "../../services/products";
+import { detail } from "../../services/patient";
 
 export default async (request: Request, response: Response) => {
   const { id } = request.params;
