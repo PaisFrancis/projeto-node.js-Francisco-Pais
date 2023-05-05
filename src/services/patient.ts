@@ -1,47 +1,31 @@
-import { PrismaClient, User } from "@prisma/client";
-
-import bcrypt from "bcrypt";
+import { PrismaClient, Patient } from "@prisma/client";
 
 export const prisma = new PrismaClient();
 
-const login = async (email: string, password: string): Promise<User | null> => {
-  const user = await prisma.user.findUnique({
-    where: { email },
-    include: { profile: true },
-  });
-
-  if (!user) return null;
-
-  const isPasswordValid = await bcrypt.compare(password, user.password);
-
-  if (!isPasswordValid) return null;
-
-  return user;
-};
-
-const allPatients = () =>
+const getAllPatients = () =>
   prisma.patient.findMany({
     where: {
       deleted: false,
     },
   });
 
-const detailPatient = (id: string) =>
-  prisma.patient.findFirst({
+const getPatient = (name: string) => {
+  return prisma.patient.findFirst({
     where: {
-      id,
+      name,
       deleted: false,
     },
   });
+};
 
-const addPatient = (
+const createPatient = (
   name: string,
   age: number,
   sex: string,
   address: string,
   contact: string
-) =>
-  prisma.patient.create({
+) => {
+  return prisma.patient.create({
     data: {
       name,
       age,
@@ -50,26 +34,25 @@ const addPatient = (
       contact,
     },
   });
+};
 
-const updatePatient = (id: string, patient: Patient) =>
-  prisma.patient.update({
-    where: { id },
-    data: patient,
-  });
+const updatePatient = (id: string, data: Patient) => {
+  return prisma.patient.update({ where: { id }, data });
+};
 
-const removePatient = (id: string) =>
-  prisma.patient.update({
+const deletePatient = (id: string) => {
+  return prisma.patient.update({
     where: { id },
     data: {
       deleted: true,
     },
   });
+};
 
 export {
-  login,
-  allPatients,
-  detailPatient,
-  addPatient,
+  getAllPatients,
+  getPatient,
+  createPatient,
   updatePatient,
-  removePatient,
+  deletePatient,
 };

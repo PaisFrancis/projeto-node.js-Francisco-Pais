@@ -2,58 +2,62 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-provider = "mysql"
-url = env("DATABASE_URL")
+  provider = "mysql"
+  url = env("DATABASE_URL")
 }
 
 model Admin {
-id Int @id @default(autoincrement())
-login String @unique
-password String
-createdAt DateTime @default(now())
-updatedAt DateTime @updatedAt
-patients Patient[]
+  id String @id @default(uuid())
+  login String @unique
+  password String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  
 }
 
 model Patient {
-id Int @id @default(autoincrement())
-name String
-age Int
-sex String
-address String
-contact String
-createdAt DateTime @default(now())
-updatedAt DateTime @updatedAt
-adminId Int
-admin Admin @relation(fields: [adminId], references: [id])
-appointments Appointment[]
+  id String @id @default(uuid())
+  name String
+  age Int
+  sex String
+  address String
+  contact String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  appointments Appointment[]
+  deleted     Boolean  @default(false)
 }
 
 model Appointment {
-id Int @id @default(autoincrement())
-date DateTime
-time String
-room String
-observations String?
-createdAt DateTime @default(now())
-updatedAt DateTime @updatedAt
-patientId Int
-patient Patient @relation(fields: [patientId], references: [id])
-doctorId Int?
-doctor Doctor? @relation(fields: [doctorId], references: [id])
+  id String @id @default(uuid())
+  date DateTime
+  time String
+  room String
+  observations String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  patientId String
+  patient Patient @relation(fields: [patientId], references: [id])
+  doctorId String 
+  doctor Doctor? @relation(fields: [doctorId], references: [id])
+  deleted     Boolean  @default(false)
 }
 
 model Doctor {
-id Int @id @default(autoincrement())
-name String
-field String
-createdAt DateTime @default(now())
-updatedAt DateTime @updatedAt
-appointments Appointment[]
+  id String @id @default(uuid())
+  name String
+  field String
+  address String
+  contact String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  appointments Appointment[]
+  deleted     Boolean  @default(false)
 }
 
 

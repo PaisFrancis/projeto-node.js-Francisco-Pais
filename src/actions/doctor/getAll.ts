@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { all } from "../../services/patient";
+import { getAllDoctors } from "../../services/doctor";
 
 export default async (_: Request, response: Response) => {
-  response.json(await all());
+  response.json(await getAllDoctors());
 };
