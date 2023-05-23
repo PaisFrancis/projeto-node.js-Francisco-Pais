@@ -1,18 +1,17 @@
-import { Doctor } from "@prisma/client";
+import { PrismaClient, Doctor } from "@prisma/client";
 
-const prisma = require("./patient");
+export const prisma = new PrismaClient();
 
 const getAllDoctors = () =>
   prisma.doctor.findMany({
-    where: {
-      deleted: false,
-    },
+    // Find all, even deleted records
   });
 
-const getDoctor = (name: string) => {
+const getDoctor = (name?: string, id?: string) => {
   return prisma.doctor.findFirst({
     where: {
       name,
+      id,
       deleted: false,
     },
   });
@@ -34,14 +33,27 @@ const createDoctor = (
   });
 };
 
-const updateDoctor = (id: string, data: Doctor) => {
-  return prisma.doctor.update({ where: { id }, data });
+const updateDoctor = (id: string, doctor: Doctor) => {
+  return prisma.doctor.update({
+    where: { id },
+    data: doctor,
+  });
 };
 
 const deleteDoctor = (id: string) => {
   return prisma.doctor.update({
     where: { id },
     data: {
+      deleted: true,
+    },
+    select: {
+      id: true,
+      name: true,
+      field: true,
+      address: true,
+      contact: true,
+      createdAt: true,
+      updatedAt: true,
       deleted: true,
     },
   });

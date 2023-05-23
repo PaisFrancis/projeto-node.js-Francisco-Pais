@@ -4,15 +4,14 @@ export const prisma = new PrismaClient();
 
 const getAllPatients = () =>
   prisma.patient.findMany({
-    where: {
-      deleted: false,
-    },
+    // Find all, even deleted records
   });
 
-const getPatient = (name: string) => {
+const getPatient = (name?: string, id?: string) => {
   return prisma.patient.findFirst({
     where: {
       name,
+      id,
       deleted: false,
     },
   });
@@ -36,14 +35,28 @@ const createPatient = (
   });
 };
 
-const updatePatient = (id: string, data: Patient) => {
-  return prisma.patient.update({ where: { id }, data });
+const updatePatient = (id: string, patient: Patient) => {
+  return prisma.patient.update({
+    where: { id },
+    data: patient,
+  });
 };
 
 const deletePatient = (id: string) => {
   return prisma.patient.update({
     where: { id },
     data: {
+      deleted: true,
+    },
+    select: {
+      id: true,
+      name: true,
+      age: true,
+      sex: true,
+      address: true,
+      contact: true,
+      createdAt: true,
+      updatedAt: true,
       deleted: true,
     },
   });

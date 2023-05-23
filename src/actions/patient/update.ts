@@ -4,14 +4,14 @@ import { updatePatient, getPatient } from "../../services/patient";
 export default async (request: Request, response: Response) => {
   const { id } = request.params;
 
-  if (!(await getPatient(id))) {
+  if (!(await getPatient(undefined, id))) {
     return response.status(404).json({
       code: 404,
       message: "Patient not found",
     });
   }
 
-  const product = await updatePatient(id, request.body);
+  const patient = await updatePatient(id, request.body);
 
-  return response.json(product);
+  return response.json(patient);
 };

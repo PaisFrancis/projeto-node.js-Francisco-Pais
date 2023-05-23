@@ -8,17 +8,31 @@ generator client {
 datasource db {
   provider = "mysql"
   url = env("DATABASE_URL")
+
 }
 
-model Admin {
+model User {
   id String @id @default(uuid())
   login String @unique
   password String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+  deleted Boolean @default(false)
+  profile Profile?
   
 }
+
+model Profile {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  firstName String   @db.VarChar(255)
+  lastName  String?  @db.VarChar(255)
+  bio       String?  @db.Text()
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
 
 model Patient {
   id String @id @default(uuid())
@@ -36,7 +50,6 @@ model Patient {
 model Appointment {
   id String @id @default(uuid())
   date DateTime
-  time String
   room String
   observations String?
   createdAt DateTime @default(now())
@@ -65,52 +78,3 @@ model Doctor {
 
 
 
-// generator client {
-//   provider = "prisma-client-js"
-// }
-
-// datasource db {
-//   provider = "mysql"
-//   url      = env("DATABASE_URL")
-// }
-
-// model User {
-//   id          Int      @id @default(autoincrement())
-//   login       String   @unique
-//   password    String
-//   patients    Patient[]
-// }
-
-// model Patient {
-//   id          Int      @id @default(autoincrement())
-//   name        String
-//   age         Int
-//   sex         String
-//   address     String
-//   contact     String
-//   appointments Appointment[]
-
-//   userId      Int?
-//   user        User?    @relation(fields: [userId], references: [id])
-// }
-
-// model Appointment {
-//   id          Int      @id @default(autoincrement())
-//   date        DateTime
-//   time        DateTime
-//   room        String
-//   observations String?
-
-//   patientId   Int?
-//   patient     Patient? @relation(fields: [patientId], references: [id])
-
-//   doctorId    Int?
-//   doctor      Doctor? @relation(fields: [doctorId], references: [id])
-// }
-
-// model Doctor {
-//   id          Int      @id @default(autoincrement())
-//   name        String
-//   field       String
-//   appointments Appointment[]
-// }

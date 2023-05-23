@@ -1,15 +1,17 @@
 import { Request, Response } from "express";
 import { createAppointment } from "../../services/appointment";
 
-export default async (req: Request, res: Response) => {
-  const { date, time, room, patientId, doctorId, observations } = req.body;
+export default async (request: Request, response: Response) => {
+  const { date, room, patientId, doctorId, observations } = request.body;
 
   const newAppointment = await createAppointment(
     date,
-    time,
+
     room,
     patientId,
     doctorId,
     observations
   );
+
+  return response.json(newAppointment);
 };

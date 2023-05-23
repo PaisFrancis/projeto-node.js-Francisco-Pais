@@ -1,11 +1,16 @@
-import { Appointment, Doctor, Patient } from "@prisma/client";
+import { Appointment } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
-const prisma = require("./patient");
+export const prisma = new PrismaClient();
 
 const getAllAppointments = () =>
   prisma.appointment.findMany({
     where: {
       deleted: false,
+    },
+    include: {
+      patient: true,
+      doctor: true,
     },
   });
 
@@ -15,38 +20,96 @@ const getAppointment = (id: string) => {
       id,
       deleted: false,
     },
-  });
-};
-
-const createAppointment = (
-  date: string,
-  time: string,
-  room: string,
-  { id: patientId }: Patient,
-  { id: doctorId }: Doctor,
-  observations?: string
-) => {
-  return prisma.appointment.create({
-    data: {
-      date,
-      time,
-      room,
-      patientId,
-      doctorId,
-      observations,
+    include: {
+      patient: true,
+      doctor: true,
     },
   });
 };
 
-const updateAppointment = (id: string, data: Partial<Appointment>) => {
-  return prisma.appointment.update({ where: { id }, data });
+const createAppointment = async (
+  date: Date,
+  room: string,
+  patientId: string,
+  doctorId: string,
+  observations: string
+) => {
+  // Check if the doctor exists
+  const doctor = await prisma.doctor.findFirst({ where: { id: doctorId } });
+  if (!doctor) {
+    throw new Error("Doctor not found");
+  }
+
+  // Check if the patient exists
+  const patient = await prisma.patient.findFirst({ where: { id: patientId } });
+  if (!patient) {
+    throw new Error("Patient not found");
+  }
+
+  return prisma.appointment.create({
+    data: {
+      date,
+      room,
+      observations,
+      doctor: {
+        connect: {
+          id: doctorId,
+        },
+      },
+      patient: {
+        connect: {
+          id: patientId,
+        },
+      },
+    },
+    include: {
+      patient: true,
+      doctor: true,
+    },
+  });
+};
+
+const updateAppointment = async (id: string, appointment: Appointment) => {
+  // Check if the appointment exists
+  const existingAppointment = await prisma.appointment.findUnique({
+    where: { id },
+  });
+  if (!existingAppointment) {
+    throw new Error("Appointment not found");
+  }
+
+  // Create a new object without the patientId field
+  const { patientId, ...appointmentData } = appointment || {};
+
+  if (appointment.patientId) {
+    return {
+      error:
+        "Cannot update patientId, if this was intentional, create a new appointment instead",
+      errorCode: 400,
+    };
+  }
+
+  // Update the appointment fields
+  const updatedAppointment = await prisma.appointment.update({
+    where: { id },
+    data: appointmentData,
+    include: { patient: true, doctor: true },
+  });
+
+  // Return the updated appointment
+  return updatedAppointment;
 };
 
 const deleteAppointment = (id: string) => {
-  return prisma.appointment.update({
+  return prisma.appointment.delete({
     where: { id },
-    data: {
-      deleted: true,
+    select: {
+      id: true,
+      date: true,
+      room: true,
+      observations: true,
+      createdAt: true,
+      updatedAt: true,
     },
   });
 };

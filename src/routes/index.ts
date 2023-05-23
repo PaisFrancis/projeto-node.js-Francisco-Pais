@@ -1,7 +1,8 @@
 import express, { Request, Response } from "express";
-import authRoutes from "./doctor";
-import productRoutes from "./patient";
-import orderRoutes from "./appointment";
+import authRoutes from "./auth";
+import patientRoutes from "./patient";
+import doctorRoutes from "./doctor";
+import appointmentRoutes from "./appointment";
 import { name, version } from "../../package.json";
 
 const router = express.Router();
@@ -14,7 +15,8 @@ router.get("/", (req: Request, res: Response) =>
 );
 
 router.use("/auth", authRoutes);
-router.use("/products", productRoutes);
-router.use("/order", orderRoutes);
+router.use("/patient", patientRoutes);
+router.use("/doctor", doctorRoutes);
+router.use("/appointment", appointmentRoutes);
 
 export default router;

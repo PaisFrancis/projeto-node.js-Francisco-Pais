@@ -29,21 +29,3 @@ app.use(router);
 app.listen(port, () =>
   console.log(`Server listening on http://localhost:${port}`)
 );
-
-// https://www.prisma.io
-
-// npm i prisma -D
-
-// npx prisma init
-
-// npx prisma migrate dev --name initial
-
-// npm i @prisma/client
-
-// caso não consigam migrar para a base da dados de casa usar o comando npx migrate reset
-
-// Se o modelo for criado no workbench usar este comando para criar a configuração do prisma
-// npx prisma db pull
-
-// Se for só preciso atualizar o prisma client
-// npx prisma generate
